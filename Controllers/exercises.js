@@ -1,6 +1,6 @@
 const Exercises = require("../Database/Models/exercisesModel.js");
 
-export const getAllExercises = async (req, res) => {
+const getAllExercises = async (req, res) => {
   try {
     const exercises = await Exercises.find({});
     res.status(200).json(exercises);
@@ -8,3 +8,5 @@ export const getAllExercises = async (req, res) => {
     res.status(500).json({ message: e.message });
   }
 };
+
+module.exports = { getAllExercises };

@@ -1,5 +1,5 @@
 const { Router } = require("express");
-import { getAllExercises } from "../Controllers/exercises";
+const { getAllExercises } = require("../Controllers/exercises.js");
 
 const exercisesRouter = Router();
 
