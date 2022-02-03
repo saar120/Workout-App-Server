@@ -6,4 +6,4 @@ const mongoURL = process.env.MONGODB_URL;
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
-module.exports = { PORT, mongoURL };
+module.exports = { PORT, mongoURL, JWT_SECRET };
