@@ -8,7 +8,9 @@ const SetSchema = mongoose.Schema({
 const ExerciseSchema = mongoose.Schema({
   name: { type: "String", required: true },
   sets: [SetSchema],
-  volume: { type: "Number", required: true },
+  totalWeight: { type: "Number", required: true },
+  totalReps: { type: "Number", required: true },
+  validSets: { type: "Number", required: true },
 });
 
 const WorkoutSchema = mongoose.Schema({

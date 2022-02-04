@@ -1,9 +1,10 @@
 const UserWorkout = require("../Database/Models/userWorkouts.js");
+const { createWorkout } = require("../utils/workoutUtils.js");
 
 const addWorkout = async (req, res) => {
   try {
     const { creatorID, title, exercises } = req.body;
-    const workout = { title, exercises };
+    const workout = createWorkout(title, exercises);
     const existingUserWorkouts = await UserWorkout.findOneAndUpdate(
       { creatorID: creatorID },
       { $push: { workouts: workout } },
