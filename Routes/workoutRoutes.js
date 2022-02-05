@@ -1,8 +1,10 @@
 const express = require("express");
-const { addWorkout } = require("../Controllers/workout.js");
+const { addWorkout, getAllUserWorkouts } = require("../Controllers/workout.js");
+const auth = require("../Middleware/auth.js");
 
 const workoutRouter = express.Router();
 
-workoutRouter.post("/add", addWorkout);
+workoutRouter.post("/add", auth, addWorkout);
+workoutRouter.post("/getAll", auth, getAllUserWorkouts);
 
 module.exports = workoutRouter;

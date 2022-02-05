@@ -3,8 +3,9 @@ const { createWorkout } = require("../utils/workoutUtils.js");
 
 const addWorkout = async (req, res) => {
   try {
-    const { creatorID, title, exercises } = req.body;
-    const workout = createWorkout(title, exercises);
+    const { creatorID } = req;
+    const { title, exercises, date } = req.body;
+    const workout = createWorkout(title, exercises, date);
     const existingUserWorkouts = await UserWorkout.findOneAndUpdate(
       { creatorID: creatorID },
       { $push: { workouts: workout } },
@@ -17,8 +18,29 @@ const addWorkout = async (req, res) => {
       res.status(200).json(existingUserWorkouts);
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    if (error.code) {
+      return res.status(error.code).json({ message: error.message });
+    }
+    res.status(500).json({ message: "Error" });
   }
 };
 
-module.exports = { addWorkout };
+const getAllUserWorkouts = async (req, res) => {
+  try {
+    const { creatorID } = req.body;
+    const workouts = UserWorkout.findOne({ creatorID });
+    if (!workouts) {
+      const error = new Error("Workouts not found");
+      error.code = 404;
+      throw error;
+    }
+    res.status(200).json({ workouts });
+  } catch (error) {
+    if (error.code) {
+      return res.status(error.code).json({ message: error.message });
+    }
+    res.status(500).json({ message: "Error" });
+  }
+};
+
+module.exports = { addWorkout, getAllUserWorkouts };

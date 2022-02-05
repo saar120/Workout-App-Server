@@ -6,7 +6,11 @@ const calculateExercises = (exercises) => {
   let workoutVolume = 0;
   exercises.forEach((exercise) => {
     exercise.sets.forEach((set) => {
-      if (set.reps == null || set.weight == null) return; //need to solve this
+      if (set.reps === "" || set.weight === "") {
+        const error = new Error("All fields needs to be filled");
+        error.code = 400;
+        throw error;
+      }
       const setVolume = +set.reps * +set.weight;
       exercise.volume ? (exercise.volume += setVolume) : (exercise.volume = setVolume);
       exercise.totalReps ? (exercise.totalReps += set.reps) : (exercise.totalReps = set.reps);
@@ -23,9 +27,9 @@ const calculateExercises = (exercises) => {
   return workoutVolume;
 };
 
-const createWorkout = (title, exercises) => {
+const createWorkout = (title, exercises, date) => {
   const volume = calculateExercises(exercises);
-  return { title, exercises, volume };
+  return { title, exercises, volume, date };
 };
 
 module.exports = { createWorkout };

@@ -19,6 +19,7 @@ const WorkoutSchema = mongoose.Schema({
   title: { type: "String", required: true },
   exercises: [ExerciseSchema],
   volume: { type: "Number" },
+  date: { type: "Date", required: true },
 });
 
 const UserWorkoutsSchema = mongoose.Schema({

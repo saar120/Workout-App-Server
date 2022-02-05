@@ -1,5 +1,4 @@
 require("dotenv").config();
-import jwt from "jsonwebtoken";
 const jwt = require("jsonwebtoken");
 const { JWT_SECRET } = require("../config/config.js");
 
@@ -12,15 +11,16 @@ const auth = async (req, res, next) => {
     if (token && isCustomAuth) {
       // if the token is ours
       decodedData = jwt.verify(token, JWT_SECRET);
-      req.userId = decodedData?.id;
+      req.creatorID = decodedData?.id;
     } else {
       decodedData = jwt.decode(token);
-      req.userId = decodedData?.sub;
+      req.creatorID = decodedData?.sub;
     }
     next();
   } catch (err) {
     console.error(err);
+    res.status(500).json({ message: "Error" });
   }
 };
 
-export default auth;
+module.exports = auth;
