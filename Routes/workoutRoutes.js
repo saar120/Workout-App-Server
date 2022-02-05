@@ -5,6 +5,6 @@ const auth = require("../Middleware/auth.js");
 const workoutRouter = express.Router();
 
 workoutRouter.post("/add", auth, addWorkout);
-workoutRouter.post("/getAll", auth, getAllUserWorkouts);
+workoutRouter.get("/getAll", auth, getAllUserWorkouts);
 
 module.exports = workoutRouter;

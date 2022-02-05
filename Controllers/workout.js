@@ -27,8 +27,8 @@ const addWorkout = async (req, res) => {
 
 const getAllUserWorkouts = async (req, res) => {
   try {
-    const { creatorID } = req.body;
-    const workouts = UserWorkout.findOne({ creatorID });
+    const { creatorID } = req;
+    const { workouts } = await UserWorkout.findOne({ creatorID: creatorID });
     if (!workouts) {
       const error = new Error("Workouts not found");
       error.code = 404;
@@ -39,6 +39,7 @@ const getAllUserWorkouts = async (req, res) => {
     if (error.code) {
       return res.status(error.code).json({ message: error.message });
     }
+    console.log(error);
     res.status(500).json({ message: "Error" });
   }
 };
