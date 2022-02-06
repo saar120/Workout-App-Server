@@ -1,5 +1,5 @@
 const UserWorkout = require("../Database/Models/userWorkouts.js");
-const { createWorkout } = require("../utils/workoutUtils.js");
+const { createWorkout, getWorkoutByID, getExercisesByNameAndID } = require("../utils/workoutUtils.js");
 
 const addWorkout = async (req, res) => {
   try {
@@ -28,8 +28,8 @@ const addWorkout = async (req, res) => {
 const getAllUserWorkouts = async (req, res) => {
   try {
     const { creatorID } = req;
-    const { workouts } = await UserWorkout.findOne({ creatorID: creatorID });
-    if (!workouts) {
+    const workouts = await getWorkoutByID(creatorID);
+    if (workouts.length === 0) {
       const error = new Error("Workouts not found");
       error.code = 404;
       throw error;
@@ -41,6 +41,18 @@ const getAllUserWorkouts = async (req, res) => {
     }
     console.log(error);
     res.status(500).json({ message: "Error" });
+  }
+};
+
+const getAllUserExerciseByName = async () => {
+  try {
+    const creatorID = "61fef4dd477502f4fbad8354";
+    const exName = "3/4 Sit-Up";
+    const test = await getExercisesByNameAndID(exName, creatorID);
+
+    console.log(test);
+  } catch (error) {
+    console.log(error);
   }
 };
 

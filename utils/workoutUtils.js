@@ -1,3 +1,5 @@
+const UserWorkout = require("../Database/Models/userWorkouts.js");
+
 const calcRM1 = (reps, weight) => {
   return weight * (1 + reps / 30);
 };
@@ -34,4 +36,54 @@ const createWorkout = (title, exercises, date) => {
   return { title, exercises, volume, date };
 };
 
-module.exports = { createWorkout };
+const getWorkoutByID = (creatorID) => {
+  return UserWorkout.aggregate([
+    {
+      $match: {
+        creatorID: creatorID,
+      },
+    },
+    { $unwind: "$workouts" },
+    { $replaceRoot: { newRoot: "$workouts" } },
+    { $sort: { date: -1 } },
+  ]);
+};
+
+const getExercisesByNameAndID = (exName, creatorID) => {
+  return UserWorkout.aggregate([
+    {
+      $match: {
+        creatorID: creatorID,
+      },
+    },
+    {
+      $unwind: "$workouts",
+    },
+    {
+      $unwind: "$workouts.exercises",
+    },
+    {
+      $match: {
+        "workouts.exercises.name": exName,
+      },
+    },
+    {
+      $group: {
+        _id: "$workouts.exercises._id",
+        date: { $first: "$workouts.date" },
+        name: { $first: "$workouts.exercises.name" },
+        rm1: { $first: { $round: "$workouts.exercises.rm1" } },
+        volume: { $first: "$workouts.exercises.volume" },
+        totalReps: { $first: "$workouts.exercises.totalReps" },
+        sets: { $first: "$workouts.exercises.sets" },
+      },
+    },
+    {
+      $sort: {
+        date: 1,
+      },
+    },
+  ]);
+};
+
+module.exports = { createWorkout, getWorkoutByID, getExercisesByNameAndID };
