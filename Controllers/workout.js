@@ -44,16 +44,43 @@ const getAllUserWorkouts = async (req, res) => {
   }
 };
 
-const getAllUserExerciseByName = async () => {
+const getAllUserExerciseByName = async (req, res) => {
   try {
-    const creatorID = "61fef4dd477502f4fbad8354";
-    const exName = "3/4 Sit-Up";
-    const test = await getExercisesByNameAndID(exName, creatorID);
-
-    console.log(test);
+    const { creatorID } = req;
+    const { exName } = req.body;
+    const exercises = await getExercisesByNameAndID(exName, creatorID);
+    if (exercises.length === 0) {
+      const error = new Error("Exercises not found");
+      error.code = 404;
+      throw error;
+    }
+    res.status(200).json(exercises);
   } catch (error) {
+    if (error.code) {
+      return res.status(error.code).json({ message: error.message });
+    }
     console.log(error);
+    res.status(500).json({ message: "Error" });
   }
 };
 
-module.exports = { addWorkout, getAllUserWorkouts };
+const getAllUserExercisesTypes = async (req, res) => {
+  try {
+    const { creatorID } = req;
+    const exercises = await UserWorkout.findOne({ creatorID }).distinct("workouts.exercises.name");
+    if (exercises.length === 0) {
+      const error = new Error("Exercises not found");
+      error.code = 404;
+      throw error;
+    }
+    res.status(200).json(exercises);
+  } catch (error) {
+    if (error.code) {
+      return res.status(error.code).json({ message: error.message });
+    }
+    console.log(error);
+    res.status(500).json({ message: "Error" });
+  }
+};
+
+module.exports = { addWorkout, getAllUserWorkouts, getAllUserExerciseByName, getAllUserExercisesTypes };
