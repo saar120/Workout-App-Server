@@ -21,7 +21,8 @@ const addWorkout = async (req, res) => {
     if (error.code) {
       return res.status(error.code).json({ message: error.message });
     }
-    res.status(500).json({ message: "Error" });
+    console.log(error);
+    res.status(500).json({ message: "Error", error });
   }
 };
 
