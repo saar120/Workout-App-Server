@@ -49,6 +49,7 @@ const getAllUserExerciseByName = async (req, res) => {
     const { creatorID } = req;
     const { exName } = req.body;
     const exercises = await getExercisesByNameAndID(exName, creatorID);
+    console.log(exercises.length);
     if (exercises.length === 0) {
       const error = new Error("Exercises not found");
       error.code = 404;

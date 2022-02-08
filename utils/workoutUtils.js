@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const UserWorkout = require("../Database/Models/userWorkouts.js");
 
 const calcRM1 = (reps, weight) => {
@@ -44,6 +45,8 @@ const getWorkoutByID = (creatorID) => {
       },
     },
     { $unwind: "$workouts" },
+    { $set: { "workouts.exercises._id": mongoose.Types.ObjectId() } },
+    { $set: { "workouts.exercises.sets._id": mongoose.Types.ObjectId() } },
     { $replaceRoot: { newRoot: "$workouts" } },
     { $sort: { date: -1 } },
   ]);
