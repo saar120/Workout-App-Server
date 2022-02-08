@@ -7,7 +7,6 @@ const calcRM1 = (reps, weight) => {
 
 const calculateExercises = (exercises) => {
   let workoutVolume = 0;
-
   exercises.forEach((exercise) => {
     exercise.sets.forEach((set) => {
       if (set.reps === "" || set.weight === "") {
