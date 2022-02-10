@@ -30,11 +30,6 @@ const getAllUserWorkouts = async (req, res) => {
   try {
     const { creatorID } = req;
     const workouts = await getWorkoutByID(creatorID);
-    if (workouts.length === 0) {
-      const error = new Error("Workouts not found");
-      error.code = 404;
-      throw error;
-    }
     res.status(200).json({ workouts });
   } catch (error) {
     if (error.code) {

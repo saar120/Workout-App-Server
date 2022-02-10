@@ -6,7 +6,7 @@ const User = require("../Database/Models/userModel.js");
 
 const signUp = async (req, res) => {
   try {
-    const { name, email, password: passwordRaw, confirmPassword, birthDate } = req.body;
+    const { name, email, password: passwordRaw, confirmPassword } = req.body;
     const existingUser = await User.findOne({ email: email });
     if (existingUser) {
       const error = new Error("User already exists");
@@ -20,7 +20,7 @@ const signUp = async (req, res) => {
     }
     const password = await bcrypt.hash(passwordRaw, 12);
 
-    const result = await User.create({ name, email, password, birthDate });
+    const result = await User.create({ name, email, password });
 
     const token = jwt.sign({ email: result.email, id: result._id }, JWT_SECRET, { expiresIn: "1h" });
 
