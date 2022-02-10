@@ -9,7 +9,7 @@ const calculateExercises = (exercises) => {
   let workoutVolume = 0;
   exercises.forEach((exercise) => {
     exercise.sets.forEach((set) => {
-      if (set.reps === "" || set.weight === "") {
+      if (set.reps === "" || set.weight === "" || set.weight === ".") {
         const error = new Error("All fields needs to be filled");
         error.code = 400;
         throw error;
