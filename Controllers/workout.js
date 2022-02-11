@@ -79,4 +79,29 @@ const getAllUserExercisesTypes = async (req, res) => {
   }
 };
 
-module.exports = { addWorkout, getAllUserWorkouts, getAllUserExerciseByName, getAllUserExercisesTypes };
+const deleteWorkout = async (req, res) => {
+  try {
+    const { creatorID } = req;
+    const { workoutID } = req.body;
+    console.log(workoutID);
+    const deletedWorkout = await UserWorkout.findOneAndUpdate(
+      { creatorID },
+      { $pull: { workouts: { _id: workoutID } } },
+      { returnOriginal: false }
+    );
+    if (!deletedWorkout) {
+      const error = new Error("Workout not found");
+      error.code = 404;
+      throw error;
+    }
+    res.status(200).json(deletedWorkout.workouts);
+  } catch (error) {
+    if (error.code) {
+      return res.status(error.code).json({ message: error.message });
+    }
+    console.log(error);
+    res.status(500).json({ message: "Error" });
+  }
+};
+
+module.exports = { addWorkout, getAllUserWorkouts, getAllUserExerciseByName, getAllUserExercisesTypes, deleteWorkout };
