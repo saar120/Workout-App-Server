@@ -1,5 +1,5 @@
-const mongoose = require("mongoose");
 const UserWorkout = require("../Database/Models/userWorkouts.js");
+const Exercises = require("../Database/Models/exercisesModel.js");
 
 const calcRM1 = (reps, weight) => {
   return weight * (1 + reps / 30);
@@ -87,4 +87,79 @@ const getExercisesByNameAndID = (exName, creatorID) => {
   ]);
 };
 
-module.exports = { createWorkout, getWorkoutByID, getExercisesByNameAndID };
+const getSuggestedMuscles = async (creatorID) => {
+  const userExercisesNames = await UserWorkout.aggregate([
+    { $match: { creatorID } },
+    { $unwind: "$workouts" },
+    { $sort: { "workouts.date": -1 } },
+    { $limit: 3 },
+    {
+      $group: {
+        _id: null,
+        result: {
+          $push: "$workouts.exercises.name",
+        },
+      },
+    },
+    {
+      $project: {
+        _id: 0,
+        result: {
+          $setUnion: {
+            $reduce: {
+              input: "$result",
+              initialValue: [],
+              in: { $concatArrays: ["$$value", "$$this"] },
+            },
+          },
+        },
+      },
+    },
+  ]);
+  if (userExercisesNames.length === 0) {
+    const error = new Error("Exercises not found");
+    error.code = 404;
+    throw error;
+  }
+  const userLastExercises = userExercisesNames[0].result;
+  const allMuscles = await Exercises.aggregate([
+    { $group: { _id: null, result: { $push: "$primaryMuscles" } } },
+    {
+      $project: {
+        _id: 0,
+        result: {
+          $setUnion: {
+            $reduce: { input: "$result", initialValue: [], in: { $concatArrays: ["$$value", "$$this"] } },
+          },
+        },
+      },
+    },
+  ]);
+  const suggestedMuscles = await Exercises.aggregate([
+    { $match: { name: { $in: userLastExercises } } },
+    { $group: { _id: null, result: { $push: "$primaryMuscles" } } },
+    {
+      $project: {
+        _id: 0,
+        result: {
+          $setDifference: [
+            allMuscles[0].result,
+            {
+              $setUnion: {
+                $reduce: { input: "$result", initialValue: [], in: { $concatArrays: ["$$value", "$$this"] } },
+              },
+            },
+          ],
+        },
+      },
+    },
+  ]);
+  if (suggestedMuscles.length === 0) {
+    const error = new Error("Muscles not found");
+    error.code = 500;
+    throw error;
+  }
+  return suggestedMuscles[0].result;
+};
+
+module.exports = { createWorkout, getWorkoutByID, getExercisesByNameAndID, getSuggestedMuscles };
