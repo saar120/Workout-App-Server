@@ -104,4 +104,59 @@ const deleteWorkout = async (req, res) => {
   }
 };
 
-module.exports = { addWorkout, getAllUserWorkouts, getAllUserExerciseByName, getAllUserExercisesTypes, deleteWorkout };
+const suggestedMuscles = async (req, res) => {
+  try {
+    // const { creatorID } = req;
+    const creatorID = "101110504418512249226";
+    const userExercisesNames = await UserWorkout.aggregate([
+      { $match: { creatorID } },
+      { $unwind: "$workouts" },
+      { $sort: { "workouts.date": -1 } },
+      { $limit: 3 },
+      {
+        $group: {
+          _id: "$workouts.date",
+          exercises: { $first: "$workouts.exercises.name" },
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          result: {
+            $addToSet: "$exercises",
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          result: {
+            $reduce: {
+              input: "$result",
+              initialValue: [],
+              in: { $concatArrays: ["$$value", "$$this"] },
+            },
+          },
+        },
+      },
+    ]);
+    console.log(userExercisesNames);
+  } catch (error) {
+    if (error.code) {
+      // return res.status(error.code).json({ message: error.message });
+    }
+    console.log(error);
+    // res.status(500).json({ message: "Error" });
+  }
+};
+
+suggestedMuscles();
+
+module.exports = {
+  addWorkout,
+  getAllUserWorkouts,
+  getAllUserExerciseByName,
+  getAllUserExercisesTypes,
+  deleteWorkout,
+  suggestedMuscles,
+};
