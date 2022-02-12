@@ -16,6 +16,6 @@ workoutRouter.get("/getAll", auth, getAllUserWorkouts);
 workoutRouter.post("/exerciseByName", auth, getAllUserExerciseByName);
 workoutRouter.get("/userExercisesTypes", auth, getAllUserExercisesTypes);
 workoutRouter.post("/delete", auth, deleteWorkout);
-workoutRouter.get("/suggestMuscle", suggestedMuscles);
+workoutRouter.get("/suggestMuscle", auth, suggestedMuscles);
 
 module.exports = workoutRouter;
