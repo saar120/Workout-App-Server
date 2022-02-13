@@ -88,7 +88,6 @@ const deleteWorkout = async (req, res) => {
   try {
     const { creatorID } = req;
     const { workoutID } = req.body;
-    console.log(workoutID);
     const deletedWorkout = await UserWorkout.findOneAndUpdate(
       { creatorID },
       { $pull: { workouts: { _id: workoutID } } },
@@ -118,7 +117,6 @@ const suggestedMuscles = async (req, res) => {
     if (error.code) {
       return res.status(error.code).json({ message: error.message });
     }
-    console.log(error);
     res.status(500).json({ message: "Error" });
   }
 };
